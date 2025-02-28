@@ -10,11 +10,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = $_POST['data'];
     $mao_obra = $_POST['mao_obra'];
 
-    // Inserir o serviço
+    // 🔍 Buscar o ID do veículo a partir da placa
+    $sql_veiculo = "SELECT id FROM veiculos WHERE placa = ? AND cliente_id = ?";
+    $stmt_veiculo = $pdo->prepare($sql_veiculo);
+    $stmt_veiculo->execute([$placa, $cliente_id]);
+    $veiculo = $stmt_veiculo->fetch();
+
+    if (!$veiculo) {
+        die("Erro: Veículo não encontrado para este cliente.");
+    }
+
+    $veiculo_id = $veiculo['id'];
+
+    // ✅ Agora passamos veiculo_id corretamente
     $sql_servico = "INSERT INTO servicos (veiculo_id, data, mao_obra) VALUES (?, ?, ?)";
     $stmt_servico = $pdo->prepare($sql_servico);
-    $stmt_servico->execute([$cliente_id, $data, $mao_obra]);
+    $stmt_servico->execute([$veiculo_id, $data, $mao_obra]);
     $servico_id = $pdo->lastInsertId();
+
 
     // Inserir os itens do serviço
     foreach ($_POST['itens'] as $item) {
@@ -31,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <form method="POST">
-    Cliente: 
+    Cliente:
     <select name="cliente_id">
         <?php
         $stmt = $pdo->query("SELECT id, nome FROM clientes");
@@ -45,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     Data do Serviço: <input type="date" name="data"><br>
     Mão de Obra: <input type="number" name="mao_obra" step="0.01"><br>
 
-    Itens do Serviço: 
+    Itens do Serviço:
     <div id="itens">
         <div>
             Descrição: <input type="text" name="itens[0][descricao]">
