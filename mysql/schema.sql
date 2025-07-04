@@ -37,3 +37,19 @@ CREATE TABLE IF NOT EXISTS itens_orcamento (
 );
 
 
+
+
+CREATE TABLE IF NOT EXISTS configuracoes_oficina (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_oficina VARCHAR(255) NOT NULL,
+    endereco VARCHAR(255),
+    telefone1 VARCHAR(20),
+    telefone2 VARCHAR(20),
+    email_contato VARCHAR(255),
+    cnpj VARCHAR(20),
+    logo_url VARCHAR(255)
+);
+
+INSERT IGNORE INTO configuracoes_oficina (id, nome_oficina) VALUES (1, 'Minha Oficina');
+
+
