@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão - Oficina Mecânica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: var(--primary-color) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .main-container {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1.5rem;
+        }
+
+        .btn-primary {
+            background: var(--secondary-color);
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+            border-radius: 25px;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            border: none;
+            border-radius: 25px;
+        }
+
+        .btn-danger {
+            background: var(--accent-color);
+            border: none;
+            border-radius: 25px;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .nav-tabs .nav-link {
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-wrench me-2"></i>
+                Oficina Mecânica
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('dashboard')">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('clientes')">
+                            <i class="fas fa-users me-1"></i>Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('veiculos')">
+                            <i class="fas fa-car me-1"></i>Veículos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('orcamentos')">
+                            <i class="fas fa-file-invoice-dollar me-1"></i>Orçamentos
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-container">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="section fade-in">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="total-clientes">0</div>
+                        <div>Clientes</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="total-veiculos">0</div>
+                        <div>Veículos</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="total-orcamentos">0</div>
+                        <div>Orçamentos</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="valor-total">R$ 0</div>
+                        <div>Valor Total</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Últimos Orçamentos</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Cliente</th>
+                                            <th>Veículo</th>
+                                            <th>Data</th>
+                                            <th>Status</th>
+                                            <th>Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboard-orcamentos">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clientes Section -->
+        <div id="clientes-section" class="section" style="display: none;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Gestão de Clientes</h5>
+                    <button class="btn btn-light" onclick="showClienteModal()">
+                        <i class="fas fa-plus me-1"></i>Novo Cliente
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Telefone</th>
+                                    <th>Email</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientes-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Veículos Section -->
+        <div id="veiculos-section" class="section" style="display: none;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-car me-2"></i>Gestão de Veículos</h5>
+                    <button class="btn btn-light" onclick="showVeiculoModal()">
+                        <i class="fas fa-plus me-1"></i>Novo Veículo
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Ano</th>
+                                    <th>Placa</th>
+                                    <th>Cliente</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="veiculos-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orçamentos Section -->
+        <div id="orcamentos-section" class="section" style="display: none;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice-dollar me-2"></i>Gestão de Orçamentos</h5>
+                    <button class="btn btn-light" onclick="showOrcamentoModal()">
+                        <i class="fas fa-plus me-1"></i>Novo Orçamento
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Veículo</th>
+                                    <th>Data</th>
+                                    <th>Status</th>
+                                    <th>Valor Total</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orcamentos-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cliente -->
+    <div class="modal fade" id="clienteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cliente</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="clienteForm">
+                        <input type="hidden" id="cliente-id">
+                        <div class="mb-3">
+                            <label for="cliente-nome" class="form-label">Nome</label>
+                            <input type="text" class="form-control" id="cliente-nome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cliente-telefone" class="form-label">Telefone</label>
+                            <input type="text" class="form-control" id="cliente-telefone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cliente-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="cliente-email">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCliente()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Veículo -->
+    <div class="modal fade" id="veiculoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Veículo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="veiculoForm">
+                        <input type="hidden" id="veiculo-id">
+                        <div class="mb-3">
+                            <label for="veiculo-marca" class="form-label">Marca</label>
+                            <input type="text" class="form-control" id="veiculo-marca" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="veiculo-modelo" class="form-label">Modelo</label>
+                            <input type="text" class="form-control" id="veiculo-modelo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="veiculo-ano" class="form-label">Ano</label>
+                            <input type="number" class="form-control" id="veiculo-ano">
+                        </div>
+                        <div class="mb-3">
+                            <label for="veiculo-placa" class="form-label">Placa</label>
+                            <input type="text" class="form-control" id="veiculo-placa" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="veiculo-cliente" class="form-label">Cliente</label>
+                            <select class="form-control" id="veiculo-cliente" required>
+                                <option value="">Selecione um cliente</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveVeiculo()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Orçamento -->
+    <div class="modal fade" id="orcamentoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Orçamento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="orcamentoForm">
+                        <input type="hidden" id="orcamento-id">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="orcamento-veiculo" class="form-label">Veículo</label>
+                                    <select class="form-control" id="orcamento-veiculo" required>
+                                        <option value="">Selecione um veículo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="orcamento-status" class="form-label">Status</label>
+                                    <select class="form-control" id="orcamento-status">
+                                        <option value="Pendente">Pendente</option>
+                                        <option value="Aprovado">Aprovado</option>
+                                        <option value="Rejeitado">Rejeitado</option>
+                                        <option value="Concluído">Concluído</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        <h6>Itens do Orçamento</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="item-descricao" placeholder="Descrição">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" class="form-control" id="item-quantidade" placeholder="Qtd">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" id="item-valor" placeholder="Valor Unitário" step="0.01">
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-success w-100" onclick="addItem()">
+                                    <i class="fas fa-plus"></i> Adicionar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Descrição</th>
+                                        <th>Qtd</th>
+                                        <th>Valor Unit.</th>
+                                        <th>Total</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itens-table">
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="text-end">
+                            <h5>Total: <span id="orcamento-total">R$ 0,00</span></h5>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveOrcamento()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+
