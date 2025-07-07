@@ -1,6 +1,6 @@
 <?php
 class Database {
-    private $host = 'mysql';
+    private $host = 'localhost';
     private $db_name = 'oficina_mecanica';
     private $username = 'user';
     private $password = 'password';

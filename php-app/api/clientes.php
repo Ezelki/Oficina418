@@ -17,8 +17,14 @@ $request_method = $_SERVER["REQUEST_METHOD"];
 
 switch($request_method) {
     case 'GET':
-        if(!empty($_GET["id"])) {
-            $cliente->id = $_GET["id"];
+        if(isset($_GET["id"])) {
+            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+            if ($id === false || $id === null) {
+                http_response_code(400);
+                echo json_encode(array("message" => "ID de cliente inválido."));
+                exit();
+            }
+            $cliente->id = $id;
             $cliente->readOne();
             if($cliente->nome != null) {
                 $cliente_arr = array(
@@ -56,7 +62,7 @@ switch($request_method) {
                 echo json_encode($clientes_arr);
             } else {
                 http_response_code(200);
-                echo json_encode(array("records" => array()));
+                echo json_encode(array("message" => "Nenhum cliente encontrado.", "records" => array()));
             }
         }
         break;
